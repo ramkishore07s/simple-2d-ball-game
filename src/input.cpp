@@ -24,7 +24,18 @@ using namespace std;
 void keyboard(GLFWwindow *window, int key, int scancode, int action, int mods) {
     // Function is called first on GLFW_PRESS.
 
+    int left  = glfwGetKey(window, GLFW_KEY_LEFT);
+    int right = glfwGetKey(window, GLFW_KEY_RIGHT);
+  
     if (action == GLFW_RELEASE) {
+      // switch(key) {
+      // case GLFW_KEY_LEFT:
+      // 	return 1;
+      // 	break;
+      // case GLFW_KEY_RIGHT:
+      // 	return -1;
+      // 	break;
+      // }
         // switch (key) {
         // case GLFW_KEY_C:
         // rectangle_rot_status = !rectangle_rot_status;
@@ -33,7 +44,7 @@ void keyboard(GLFWwindow *window, int key, int scancode, int action, int mods) {
         // triangle_rot_status = !triangle_rot_status;
         // break;
         // case GLFW_KEY_X:
-        //// do something ..
+        // do something ..
         // break;
         // default:
         // break;
@@ -66,7 +77,7 @@ void mouseButton(GLFWwindow *window, int button, int action, int mods) {
     switch (button) {
     case GLFW_MOUSE_BUTTON_LEFT:
         if (action == GLFW_PRESS) {
-            // Do something
+	  quit(window);
             return;
         } else if (action == GLFW_RELEASE) {
             // Do something

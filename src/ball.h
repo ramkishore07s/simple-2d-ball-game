@@ -7,14 +7,21 @@
 class Ball {
 public:
     Ball() {}
-    Ball(float x, float y, color_t color);
+    Ball(float x, float y, float r, color_t c, bool dual);
     glm::vec3 position;
+    float radius;
     float rotation;
     void draw(glm::mat4 VP);
     void set_position(float x, float y);
+    void rotate_ball(float theta);
+    Boundary boundary();
+    //    void compute_next_vertex(int i, int n, float vbd[], float* theta);
     void tick();
     double speed;
-    bounding_box_t bounding_box();
+    double speed_y;
+    color_t color;
+    bool dual;
+    //    bounding_box_t bounding_box();
 private:
     VAO *object;
 };
