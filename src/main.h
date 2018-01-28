@@ -72,7 +72,9 @@ struct Boundary {
   bool disk;
 };
 
+// --- Engine ---
 bool detect_collision(Boundary a, Boundary b);
+int where(glm::vec3 pos, float r, float speed, float speed_y);
 
 extern float screen_zoom, screen_center_x, screen_center_y;
 void reset_screen();
@@ -81,6 +83,14 @@ void reset_screen();
 extern const color_t COLOR_RED;
 extern const color_t COLOR_GREEN;
 extern const color_t COLOR_BLACK;
+extern const color_t COLOR_WATER_BLUE;
 extern const color_t COLOR_BACKGROUND;
-
+extern const color_t COLOR_LAND;
+extern const color_t COLOR_BROWN;
+extern const color_t COLOR_MOUNTAIN;
+extern const color_t COLOR_BLUE;
+extern const color_t COLOR_YELLOW;
+// --- Background ---
+void draw_background(glm::mat4 VP, glm::vec3 target);
+void compute_next_vertex(int i, int n, float vbd[], float* theta, float radius);
 #endif

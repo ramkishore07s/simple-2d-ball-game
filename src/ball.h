@@ -13,7 +13,7 @@ public:
     float rotation;
     void draw(glm::mat4 VP);
     void set_position(float x, float y);
-    void rotate_ball(float theta);
+    void rotate_ball(float disp);
     Boundary boundary();
     //    void compute_next_vertex(int i, int n, float vbd[], float* theta);
     void tick();
@@ -23,7 +23,7 @@ public:
     bool dual;
     //    bounding_box_t bounding_box();
 private:
-    VAO *object;
+    VAO *object, *o1, *o2, *o3, *o4;
 };
 
 #endif // BALL_H
