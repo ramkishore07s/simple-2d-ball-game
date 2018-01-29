@@ -2,6 +2,8 @@
 #include "timer.h"
 #include "ball.h"
 #include "background.h"
+#include "bar.h"
+#define PI 3.14159265
 
 using namespace std;
 
@@ -10,15 +12,18 @@ GLuint     programID;
 GLFWwindow *window;
 int collided = 0;
 
-Ball ball[100], player;
+Ball ball[100], player, test;
 Background bg;
+Bar bar[20], t_bar;
+
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 Timer t60(1.0 / 60);
 int no_of_balls = 100;
 
 glm::vec3 eye, up, target;
 GLfloat ground_level = -2.0f;
-const int ground = 0, air = 1, water = 2, trampoline = 3, left_edge = 4, right_edge = 5;
+const int ground = 0, air = 1, water = 2, trampoline = 3,
+  left_edge = 4, right_edge = 5, w_ground = 6;
 const float gravity = 0.001;
 int type;
 
@@ -48,23 +53,22 @@ void draw() {
   else if (screen_zoom < 1)
     screen_zoom += 0.0005;
   reset_screen();
-  cout<<player.position.x<<" "<<player.position.y<<"\n";
   Matrices.view = glm::lookAt(eye, target, up); // Fixed camera for 2D (ortho) in XY plane
 
-  // Compute ViewProject matrix as view/camera might not be changed for this frame
+  
   glm::mat4 VP = Matrices.projection * Matrices.view;
-
-  // Send our transformation to the currently bound shader, in the "MVP" uniform
-  // For each model you render, since the MVP will be different (at least the M part)
-  // Don't change unless you are sure!!
   glm::mat4 MVP;  // MVP = Projection * View * Model
-
-  // Scene render
   bg.draw_background(VP, target);
   for(int i=0; i<no_of_balls; ++i) {
+    if( ball[i].position.x > player.position.x + 10 )
+      ball[i].position.x = player.position.x - 10;
     ball[i].draw(VP);
+    if( i%5 == 0 )
+      bar[i/5].draw(VP, ball[i].position);
   }
   player.draw(VP);
+  // test.draw(VP);
+  // t_bar.draw(VP, test.position);
 }
 
 void tick_elements() {
@@ -81,16 +85,21 @@ void initGL(GLFWwindow *window, int width, int height) {
   eye = glm::vec3(0,0,3);
   target = glm::vec3(0,0,0);
   up = glm::vec3(0,1,0);
-
+  srand(time(NULL));
   player = Ball(1.5, ground_level + 2 + 0.3, 0.3, COLOR_RED, true);
   player.speed = 0;
   for(int i=0; i<no_of_balls; ++i) {
     float  y = (rand()/(float)RAND_MAX) * 3;
-    float x = -3 -((float)i) + (rand()/(float)RAND_MAX)*2;
+    float x = 3 -((float)i) + (rand()/(float)RAND_MAX)*2;
     float r = (rand()/(float)RAND_MAX)/4 + 0.2;
     ball[i] = Ball(x, y, r, COLOR_RED, false);
+    if( i%5 == 0 )
+      bar[i/5] = Bar(r);
   }
-  
+
+  test = Ball(5, 0.7, 0.3, COLOR_RED, false);
+  test.speed = 0;
+  t_bar = Bar(0.3);
   // Create and compile our GLSL program from the shaders
   programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
   // Get a handle for our "MVP" uniform
@@ -126,7 +135,6 @@ int main(int argc, char **argv) {
   /* Draw in loop */
   while (!glfwWindowShouldClose(window)) {
     // Process timers
-
     if (t60.processTick()) {
       // 60 fps
       // OpenGL Draw commands
@@ -137,11 +145,9 @@ int main(int argc, char **argv) {
       tick_elements();
       tick_input(window);
     }
-
     // Poll for Keyboard and mouse events
     glfwPollEvents();
   }
-
   quit(window);
 }
 
@@ -169,9 +175,17 @@ void tick_input(GLFWwindow *window) {
 	float cos_theta = diff.x / sq_sum;
 	player.speed += 0.05 * cos_theta;
 	player.speed_y = 0.06 * sin_theta;
+	ball[i].position.x = -70;
       }
+    if( i%5 == 0 ) {
+      if( detect_collision_plank( player.boundary(), bar[i/5].boundary(ball[i].position),
+				  &player.speed, &player.speed_y)) {
+	player.position.y += player.speed_y;
+	return;
+      }
+      }
+      
   }
-
   if( left && player.speed > 0 )
     player.speed -= 0.002;
   else if( right && player.speed < 0 )
@@ -183,11 +197,21 @@ void tick_input(GLFWwindow *window) {
     player.speed += 0.00002;
   else
     player.speed = 0;
-
+  //physical position of the player in the game
   type = where(player.position, player.radius, player.speed, player.speed_y);
 
-  switch(type) {
+  float hyp = sqrt(pow(player.position.y + 2,2) + pow(player.position.x, 2));
+  float x_diff = player.position.x;
+  float y_diff = player.position.y + 2;
 
+  float sin_t = x_diff / hyp;
+  float cos_t = y_diff / hyp;
+
+  float r = 1.3 - player.radius;
+  float theta = asin(sin_t);
+   
+  switch(type) {
+    // rules according to the location of player
   case ground:
     if( left && !right) {
       player.position.x -= 0.01;
@@ -200,7 +224,7 @@ void tick_input(GLFWwindow *window) {
     if( up ) {
       player.speed_y = 0.06;
     }
-    else if( player.speed_y < 0.01 )
+    else if( player.speed_y < -0.01 )
       player.speed_y /= -1.5;
     break;
 
@@ -222,37 +246,64 @@ void tick_input(GLFWwindow *window) {
     player.position.y = -1 + player.radius + 0.002;
     break;
 
-  case water:
-    float x_diff = player.position.x;
-    float y_diff = player.position.y +2;
-    
-    if( sqrt(x_diff*x_diff + y_diff*y_diff) > 1.3 - player.radius - 0.001
-	&& player.position.y > -2 -player.radius) {
-      //player.position.x -= (sqrt(pow(1.3 - player.radius, 2) - pow(player.position.y + 2, 2)) + 0.001)/2;
-      if( player.position.x > 0)
-	player.position.x -= 0.002;
-      else
-	player.position.x += 0.002;
-      player.position.y -= 0.003;
+  case water: 
+    if( player.position.y < -2 ) {
+      float rem =  1.3 - player.radius - sqrt(pow(player.position.y + 2,2)
+					      + pow(player.position.x, 2));
+      if( rem > 0.001 )
+	player.position.y -= r*cos(theta) / 25;
     }
-    else if( player.position.x != 0 ){
-      if( abs(player.position.x) > 0.01) {
-	if( player.position.x > 0) {
-	  player.position.x -= 0.005;
-	  player.rotate_ball(-0.01);
-	}
-	else {
-	  player.position.x += 0.01;
-	  player.rotate_ball(0.01);
-	}
-	player.position.y = -sqrt(pow(1.3 - player.radius, 2) - pow(player.position.x, 2)) -2;
+    else
+      player.position.y -= 0.01;
+    break;
+
+  case w_ground:
+    if( !left && !right ) {
+      if( player.position.x > 0.001 ) {
+	player.position.x = r * sin(theta - 0.009);
+	player.position.y = -r * cos(theta - 0.009) - 2;
+	player.rotate_ball(r * -0.01);
       }
-      else {
-	player.position.x = 0;
-	player.position.y = -2 -1.3 + player.radius;
+      else if (player.position.x < 0.01 ) {
+	player.position.x = r * sin(theta + 0.009);
+	player.position.y = -r * cos(theta + 0.009) - 2;
+	player.rotate_ball(r * 0.01);
       }
     }
+    if( left && !right ) {
+      	player.position.x = r * sin(theta - 0.009);
+	player.position.y = -r * cos(theta - 0.009) - 2;
+	player.rotate_ball(r * -0.01);
+    }
+    if( right && !left) {
+      	player.position.x = r * sin(theta + 0.009);
+	player.position.y = -r * cos(theta + 0.009) - 2;
+	player.rotate_ball(r * 0.01);
+    }
+    break;
+
+  case right_edge:
+    if( right ) {
+      player.position.x = 1.3;
+      player.position.y = -2 + player.radius;
+    }
+    else {
+      player.position.x = 1.3 -player.radius-0.001;
+      player.position.y = -2;
+    }
+    player.speed_y = 0;
 
     break;
-  };
+
+  case left_edge:
+    if( !left ) {
+      player.position.x = -1.3 +player.radius+0.001;
+      player.position.y = -2;
+    }
+    else {
+      player.position.x = -1.3;
+      player.position.y = -2 + player.radius;
+    }
+    player.speed_y = 0;
+  };	
 }

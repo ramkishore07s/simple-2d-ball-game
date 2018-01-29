@@ -79,6 +79,8 @@ Background::Background(bool t) {
     0.9, 0.9, 0,
   };
   this->t = create3DObject(GL_TRIANGLES, 6, t_data, COLOR_BLACK, GL_FILL);
+  //  static const GLfloat mountain_data[] = {
+    
 }
 
 void Background::draw_ground(glm::mat4 VP, glm::vec3 target) {

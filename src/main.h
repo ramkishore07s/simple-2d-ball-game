@@ -68,13 +68,14 @@ struct Boundary {
     float x;
     float y;
   float r;
-  float h;
+  float angle;
   bool disk;
 };
 
 // --- Engine ---
 bool detect_collision(Boundary a, Boundary b);
 int where(glm::vec3 pos, float r, float speed, float speed_y);
+bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed_y);
 
 extern float screen_zoom, screen_center_x, screen_center_y;
 void reset_screen();

@@ -26,6 +26,7 @@ Ball::Ball(float x, float y, float r, color_t c, bool dual) {
   this->speed = 0.01;
   this->speed_y = 0;
 
+  color_t colors[] = {COLOR_RED, COLOR_GREEN, COLOR_BLACK, COLOR_BLUE, COLOR_YELLOW};
   static const GLfloat vbd_1[] = {
     0.0, 0.0, 0.0,
     1,0,0.0,
@@ -113,10 +114,11 @@ Ball::Ball(float x, float y, float r, color_t c, bool dual) {
     this->o4 = create3DObject(GL_TRIANGLES, 18, vbd_4, COLOR_BROWN, GL_FILL);
   }
   else {
-    this->o1 = create3DObject(GL_TRIANGLES, 18, vbd_1, COLOR_RED, GL_FILL);
-    this->o2 = create3DObject(GL_TRIANGLES, 18, vbd_2, COLOR_RED, GL_FILL);
-    this->o3 = create3DObject(GL_TRIANGLES, 18, vbd_3, COLOR_RED, GL_FILL);
-    this->o4 = create3DObject(GL_TRIANGLES, 18, vbd_4, COLOR_RED, GL_FILL);
+    color_t color = colors[rand()%5];
+    this->o1 = create3DObject(GL_TRIANGLES, 18, vbd_1, color, GL_FILL);
+    this->o2 = create3DObject(GL_TRIANGLES, 18, vbd_2, color, GL_FILL);
+    this->o3 = create3DObject(GL_TRIANGLES, 18, vbd_3, color, GL_FILL);
+    this->o4 = create3DObject(GL_TRIANGLES, 18, vbd_4, color, GL_FILL);
   }
 
 }
@@ -136,7 +138,7 @@ Boundary Ball::boundary() {
   b.y = this->position.y;
   b.r = this->radius;
   b.disk = true;
-  b.h = 0;
+  b.angle = 0;
   return b;
 }
 
