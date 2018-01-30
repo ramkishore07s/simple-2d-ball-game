@@ -152,23 +152,24 @@ void Magnet::draw(glm::mat4 VP, glm::vec3 eye) {
   draw_3(VP, eye);
 }
 
-bool Magnet::is_magnet_on() {
-
-  if( this->time == 0 ) {
-    if( this->blackout == 0 ) {
-      if( rand() %10 == 0 ) {
-	this->right = !this->right;
-	this->time = 500;
-	this->blackout = 600;
-	return true;
+bool Magnet::is_magnet_on(int score, int level3) {
+  if( score >= level3 ) {
+    if( this->time == 0 ) {
+      if( this->blackout == 0 ) {
+	if( rand() %10 == 0 ) {
+	  this->right = !this->right;
+	  this->time = 500;
+	  this->blackout = 600;
+	  return true;
+	}
       }
+      else 
+	--this->blackout;
     }
-    else 
-      --this->blackout;
-  }
-  if( this->time > 0 ) {
-    --this->time;
-    return true;
+    if( this->time > 0 ) {
+      --this->time;
+      return true;
+    }
   }
   return false;
 }

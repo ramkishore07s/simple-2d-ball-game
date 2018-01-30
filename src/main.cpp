@@ -10,7 +10,7 @@
 
 using namespace std;
 
-int score, level1, level2;
+int score, level1, level2, level3;
 
 GLMatrices Matrices;
 GLuint     programID;
@@ -37,7 +37,7 @@ const float gravity = 0.001;
 int type;
 
 int level = 1;
-bool pan_auto = false;
+bool pan_auto = true;
 
 float dist(glm::vec3 pos, float x, float y) {
   return sqrt((pos.x * pos.x - x*x) + (pos.y * pos.y - y*y));
@@ -131,6 +131,7 @@ void initGL(GLFWwindow *window, int width, int height) {
   score = 0;
   level1 = 10;
   level2 = 20;
+  level3 = 30;
   eye = glm::vec3(0,0,3);
   target = glm::vec3(0,0,0);
   up = glm::vec3(0,1,0);
@@ -278,7 +279,7 @@ void tick_input(GLFWwindow *window) {
     player.speed = 0;
   //physical position of the player in the game
   type = where(player.position, player.radius, player.speed, player.speed_y);
-  magnet_on = magnet.is_magnet_on();
+  magnet_on = magnet.is_magnet_on(score, level3);
   
   float hyp = sqrt(pow(player.position.y + 2,2) + pow(player.position.x, 2));
   float x_diff = player.position.x;
@@ -349,7 +350,7 @@ void tick_input(GLFWwindow *window) {
       player.position.x += 0.015;
       player.rotate_ball(0.01);
     }
-    if( up && player.position.y < -1.6 )
+    if( up && player.position.y < -1.6 && abs(player.position.x) > 1.3)
       player.speed_y = 0.06;
     break;
 

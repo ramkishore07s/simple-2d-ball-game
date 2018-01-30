@@ -10,7 +10,7 @@ class Magnet {
 
   bool on, right;
   int time, blackout;
-  bool is_magnet_on();
+  bool is_magnet_on(int score, int level3);
   void draw(glm::mat4 VP, glm::vec3 eye);
   void draw_1(glm::mat4 VP, glm::vec3 eye);
   void draw_2(glm::mat4 VP, glm::vec3 eye);
