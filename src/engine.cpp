@@ -44,8 +44,8 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
   double new_vx = vx*cos(theta) - vy * sin(theta),
     new_vy = vy * cos(theta) + vx * sin(theta);
   
-  if( player.x <= b.r + a.r/2 + 0.01 && player.x >= -b.r-a.r/2 -0.01 )
-    if( player.y <= a.r + b.r/2 + abs(vy) && player.y > -a.r/2 - abs(vy) ) {
+  if( player.x + new_vx<= b.r + a.r/2 && player.x + new_vx >= -b.r-a.r/2 )
+    if( player.y + new_vy <= a.r + b.r/2  && player.y+ new_vy > -a.r/2 ) {
       std::cout<<"collided "<<player.x<<" "<<player.y<<"\n";
       velocity.y = -velocity.y;
       velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
@@ -54,8 +54,8 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
       return true;
     }
 
-  if( player.y <= b.r/2 + a.r/2 && player.y >= -0.001 )
-    if( player.x <= b.r + a.r + 0.001 && player.x >= -b.r -a.r -0.001) {
+  if( player.y + new_vy <= b.r/2 + a.r && player.y >= -0.001 )
+    if( player.x + new_vx <= b.r + a.r && player.x + new_vx >= -b.r -a.r) {
       velocity.x = -velocity.x;
       velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
       *speed = velocity.x;
@@ -63,7 +63,7 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
       return true;
     }
 
-  if( sqrt(pow(abs(player.x)-b.r, 2) + pow(player.y-b.r/2,2)) < 0.01) {
+  if( sqrt(pow(abs(player.x + new_vx)-b.r, 2) + pow(player.y+new_vy-b.r/2,2)) <= a.r) {
     velocity.x = -velocity.x;
     velocity.y = -velocity.y;
     velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
@@ -71,7 +71,7 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
     *speed_y = velocity.y;
     return true;
   }
-  if( sqrt(pow(abs(player.x)-b.r, 2) + pow(player.y,2)) < 0.01 + a.r) {
+  if( sqrt(pow(abs(player.x + new_vx)-b.r, 2) + pow(player.y+new_vy-b.r/2,2)) <= a.r) {
     velocity.x = -velocity.x;
     velocity.y = -velocity.y;
     velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;

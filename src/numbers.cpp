@@ -85,7 +85,7 @@ void Numbers::draw(glm::mat4 VP, glm::vec3 posi, float scale, int num) {
   int g = 2, d[2];
 
   d[0] = a;
-  d[1] = num;
+  d[1] = num%10;
   
   for(int j=0; j<2; ++j)
     for(int i=0; i<15; ++i )

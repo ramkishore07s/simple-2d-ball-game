@@ -224,12 +224,15 @@ void tick_input(GLFWwindow *window) {
 
   pan_right = glfwGetKey(window, GLFW_KEY_RIGHT);
   pan_left = glfwGetKey(window, GLFW_KEY_LEFT);
-  p_auto = glfwGetKey(window, GLFW_KEY_G);
+  int p_auto_on = glfwGetKey(window, GLFW_KEY_G);
+  int p_auto_off = glfwGetKey(window, GLFW_KEY_H);
 
   pan_up = glfwGetKey(window, GLFW_KEY_UP);
   pan_down = glfwGetKey(window, GLFW_KEY_DOWN);
-  if( p_auto )
-    pan_auto = !pan_auto;
+  if( p_auto_on && !p_auto_off )
+    pan_auto = true;
+  else if( !p_auto_on && p_auto_off )
+    pan_auto = false;
   
 
   for(int i=0; i<100; ++i) {
@@ -442,7 +445,7 @@ void tick_input(GLFWwindow *window) {
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-  if( screen_zoom + yoffset/100 > 0)
+  if( screen_zoom + yoffset/100 > 0.5 )
     screen_zoom += yoffset/100;
   if( !pan_auto) 
     reset_screen();
