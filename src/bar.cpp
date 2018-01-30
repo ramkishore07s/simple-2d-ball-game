@@ -14,7 +14,7 @@ Bar::Bar(float radius) {
   };
   this->object = create3DObject(GL_TRIANGLES, 6, vbd, COLOR_BROWN, GL_FILL);
   float angles[] = {0, 45, 135, 180, 225, 315};
-  this->angle = angles[ rand() % 6];
+  this->angle = rand() % 360;
   //  this->angle = 135;
 }
 

@@ -91,6 +91,8 @@ extern const color_t COLOR_BROWN;
 extern const color_t COLOR_MOUNTAIN;
 extern const color_t COLOR_BLUE;
 extern const color_t COLOR_YELLOW;
+extern const color_t COLOR_MAGNET_RED;
+extern const color_t COLOR_WHITE;
 // --- Background ---
 void draw_background(glm::mat4 VP, glm::vec3 target);
 void compute_next_vertex(int i, int n, float vbd[], float* theta, float radius);

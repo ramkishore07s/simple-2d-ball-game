@@ -26,6 +26,7 @@ bool detect_collision(Boundary a, Boundary b) {
       return true;
     return false;
   }
+  return false;
 }
 
 bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed_y) {
@@ -44,7 +45,7 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
     new_vy = vy * cos(theta) + vx * sin(theta);
   
   if( player.x <= b.r + a.r/2 + 0.01 && player.x >= -b.r-a.r/2 -0.01 )
-    if( player.y <= a.r + b.r/2 + 0.01 && player.y > -0.01 ) {
+    if( player.y <= a.r + b.r/2 + abs(vy) && player.y > -a.r/2 - abs(vy) ) {
       std::cout<<"collided "<<player.x<<" "<<player.y<<"\n";
       velocity.y = -velocity.y;
       velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
@@ -61,6 +62,24 @@ bool detect_collision_plank(Boundary a, Boundary b, double* speed, double* speed
       *speed_y = velocity.y;
       return true;
     }
+
+  if( sqrt(pow(abs(player.x)-b.r, 2) + pow(player.y-b.r/2,2)) < 0.01) {
+    velocity.x = -velocity.x;
+    velocity.y = -velocity.y;
+    velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
+    *speed = velocity.x;
+    *speed_y = velocity.y;
+    return true;
+  }
+  if( sqrt(pow(abs(player.x)-b.r, 2) + pow(player.y,2)) < 0.01 + a.r) {
+    velocity.x = -velocity.x;
+    velocity.y = -velocity.y;
+    velocity = glm::rotate((float)((b.angle)*M_PI / 180.0f), glm::vec3(0,0,1)) * velocity;
+    *speed = velocity.x;
+    *speed_y = velocity.y;
+    return true;
+  }
+
   return false;
 }
 
@@ -73,7 +92,7 @@ bool in_water(glm::vec3 pos, float r, float speed, float speed_y) {
 }
 
 bool in_water_ground(glm::vec3 pos, float r, float speed, float speed_y) {
-  if( sqrt(pow(pos.y + 2,2) + pow(pos.x, 2)) <= 1.3 - r + 0.01
+  if( sqrt(pow(pos.y + 2,2) + pow(pos.x, 2)) <= 1.3 - r + 0.1
       && sqrt(pow(pos.y + 2,2) + pow(pos.x, 2)) >= 1.3 - r - 0.01 )
     if( pos.y <= -2 )  {
       return true;
