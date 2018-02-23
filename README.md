@@ -1,6 +1,11 @@
 # OpenGl 2d ball game
 
 
+### Gameplay
+
+https://drive.google.com/open?id=1tMYlUz87v4NrSYQ9hZGwrZ3Xszv74eqp
+
+
 ### CONTROLS:
 |Key         |Action                                  |
 |:-------------------------------|:---------------------------------------|
