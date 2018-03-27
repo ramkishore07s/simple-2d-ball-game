@@ -3,9 +3,9 @@
 --------------
 ### Screenshots
 
-#### level 1
+#### level 1:
 <img src="https://github.com/ramkishore07s/simple-2d-ball-game/blob/master/screenshots/level%201.png?raw=true" width="400"></img>
-#### level 2
+#### level 2:
 <img src="https://github.com/ramkishore07s/simple-2d-ball-game/blob/master/screenshots/level%203.png?raw=true" width="400"></img>
 
 ---------------
